@@ -14,12 +14,18 @@ win_or_lose = ""
 #подумываю над тем, как можно упростить функции о валидации, попытках и выборе сложности
 
 def main():
+
     user_choice_of_difficulty = int(input())
-    max_possible_number_border = func_choose_difficulty(user_choice_of_difficulty)
+
+
+    min_possible_number_border, max_possible_number_border = func_choose_difficulty(user_choice_of_difficulty)
 
     attempts = func_calculating_number_of_attempts(user_choice_of_difficulty)
-    computer_random_number = func_computer_deciding_number(max_possible_number_border)
-    print(computer_random_number, attempts)
+
+    computer_random_number = func_computer_deciding_number(min_possible_number_border,max_possible_number_border)
+
+    player_guess = func_player_guess_validation(min_possible_number_border, max_possible_number_border)
+    print(player_guess)
 
     # while True:
 
@@ -51,27 +57,31 @@ def main():
 def func_choose_difficulty(user_choice_of_difficulty): 
     
     max_possible_number_border = user_choice_of_difficulty
+    min_possible_number_border = 1
 
     match max_possible_number_border:
-
+        #Минимальное возможные границы для числа! Теперь с ними можно экспериментировать как угодно
         case 1:
+            min_possible_number_border = 1
             max_possible_number_border = 50
 
         case 2:
+            min_possible_number_border = 1
             max_possible_number_border = 100
 
         case 3:
+            min_possible_number_border = 1
             max_possible_number_border = 1000
 
 
-    return max_possible_number_border
+    return min_possible_number_border,max_possible_number_border
 
 
 def func_calculating_number_of_attempts(user_choice_of_difficulty):
     
     attempts = 10
     attempts_depending_on_difficulty = user_choice_of_difficulty
-    
+
     match attempts_depending_on_difficulty:
 
         case 1: 
@@ -86,25 +96,23 @@ def func_calculating_number_of_attempts(user_choice_of_difficulty):
     return attempts
 
 
-def func_computer_deciding_number(max_possible_number_border):
+def func_computer_deciding_number(min_possible_number_border, max_possible_number_border):
 
+    min_possible_computer_number = min_possible_number_border
     max_possible_computer_number = max_possible_number_border
     
-    computer_random_number = random.randint(1, max_possible_computer_number)
+    computer_random_number = random.randint(min_possible_computer_number, max_possible_computer_number)
 
     return computer_random_number
 
 
-def func_player_guess_validation(prompt, player_guess, max_possible_number_border): #валидация ввода игроком числа. Оно не может быть меньше 1 и больше верхней границы
-    
+def func_player_guess_validation(min_possible_border_number, max_possible_number_border):
     while True:
         try:
-
-            player_guess = int(input(prompt))
-
-            if 1 <= player_guess <= max_possible_number_border:
+            player_guess = int(input())
+            if min_possible_border_number <= player_guess <= max_possible_number_border:
                 return player_guess
-            print(f"Я чувствую что твое число выходит за рамки от 1 до {max_possible_number_border}")
+            print(f"Я чувствую что твое число выходит за рамки от {min_possible_border_number} до {max_possible_number_border}")
 
         except ValueError:
             print("это даже не число...")
