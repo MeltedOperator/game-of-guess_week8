@@ -9,63 +9,91 @@ GREETINGS = """Привет! Давай поиграем? Я загадываю 
 GREETINGS_EASY_DIFFICULTY_CHOOSE = "1 - Легкий: от 1 до 50. 10 попыток"
 GREETINGS_MEDIUM_DIFFICULTY_CHOOSE = "2 - Средний: от 1 до 100. 7 попыток"
 GREETINGS_HARD_DIFFICULTY_CHOOSE = "3 - Сложный: от 1 до 1000. 10 попыток"
-attempts = 10
 win_or_lose = "" 
-difficulty = "" 
 
-def main(attempts):
-    max_possible_number_border = int(func_choose_difficulty()) 
+#подумываю над тем, как можно упростить функции о валидации, попытках и выборе сложности
 
-    if max_possible_number_border <= 50: 
-        difficulty = "Легкая"
+def main():
+    user_choice_of_difficulty = int(input())
+    max_possible_number_border = func_choose_difficulty(user_choice_of_difficulty)
 
-    elif 50 < max_possible_number_border <= 100:
-        attempts = 7
-        difficulty = "Средняя"
+    attempts = func_calculating_number_of_attempts(user_choice_of_difficulty)
+    computer_random_number = func_computer_deciding_number(max_possible_number_border)
+    print(computer_random_number, attempts)
 
-    else:
-        difficulty = "Сложная"
+    # while True:
 
-    start_number_attempts = attempts #количество попыток, которое было вначале(тоже для статистики)
-    computer_random_number = random.randint(1, max_possible_number_border) #число компьютера
+    #     attempts -= 1
+    #     #guess = func_player_guess_validation(max_possible_number_border=max_possible_number_border, prompt=f"Твоя догадка? ", player_guess=0) #наше предположение
+
+    #     if computer_random_number > guess:
+    #         print("Моё число больше твоего")
+
+    #     elif computer_random_number < guess:
+    #         print("Моё число меньше твоего")
+
+    #     else:
+    #         print(f"Ты угадал! Моё число было {computer_random_number}")
+    #         win_or_lose = "Выиграна"
+    #         break
+
+    #     if attempts == 0:
+    #         print("Кажется у тебя закончились попытки, ты проиграл!")
+    #         win_or_lose = "Проиграна"
+    #         break
+
+    #     print(f"Оставшиеся попытки: {attempts}")
+             
+    # func_savestats(attempts,start_number_attempts, difficulty, win_or_lose)
+    # func_game_restart() 
+
+
+def func_choose_difficulty(user_choice_of_difficulty): 
     
-    while True:
+    max_possible_number_border = user_choice_of_difficulty
 
-        attempts -= 1
-        answer = func_player_guess_validation(max_possible_number_border=max_possible_number_border, prompt=f"Твоя догадка? ", player_guess=0) #наше предположение
+    match max_possible_number_border:
 
-        if computer_random_number > answer:
-            print("Моё число больше твоего")
+        case 1:
+            max_possible_number_border = 50
 
-        elif computer_random_number < answer:
-            print("Моё число меньше твоего")
+        case 2:
+            max_possible_number_border = 100
 
-        else:
-            print(f"Ты угадал! Моё число было {computer_random_number}")
-            win_or_lose = "Выиграна"
-            break
-
-        if attempts == 0:
-            print("Кажется у тебя закончились попытки, ты проиграл!")
-            win_or_lose = "Проиграна"
-            break
-
-        print(f"Оставшиеся попытки: {attempts}")
-
-    func_savestats(attempts,start_number_attempts, difficulty, win_or_lose)
-    func_game_restart() 
+        case 3:
+            max_possible_number_border = 1000
 
 
-def func_game_restart(): #рестарт игры
+    return max_possible_number_border
 
-    do_restart = input("Хочешь сыграть ещё раз? (да/нет): ")
 
-    if do_restart == "да":
-        print("Выбирай тогда сложность")
-        main(attempts)
+def func_calculating_number_of_attempts(user_choice_of_difficulty):
+    
+    attempts = 10
+    attempts_depending_on_difficulty = user_choice_of_difficulty
+    
+    match attempts_depending_on_difficulty:
 
-    else:
-        print("Оки, было весело")
+        case 1: 
+            attempts = 10
+
+        case 2:
+            attempts = 7
+
+        case 3:
+            attempts = 10
+
+    return attempts
+
+
+def func_computer_deciding_number(max_possible_number_border):
+
+    max_possible_computer_number = max_possible_number_border
+    
+    computer_random_number = random.randint(1, max_possible_computer_number)
+
+    return computer_random_number
+
 
 def func_player_guess_validation(prompt, player_guess, max_possible_number_border): #валидация ввода игроком числа. Оно не может быть меньше 1 и больше верхней границы
     
@@ -81,34 +109,6 @@ def func_player_guess_validation(prompt, player_guess, max_possible_number_borde
         except ValueError:
             print("это даже не число...")
 
-def func_choose_difficulty(): #игрок здесь выбирает сложность. Тут тоже смотрим чтобы он ввел правильное значение
-    
-    while True:
-        try:
-
-            user_skill = int(input()) 
-            if user_skill == 1:
-                print("Легкая сложность")
-                return 50
-            
-            elif user_skill == 2:
-                print("Средняя сложность")
-                return 100
-            
-            elif user_skill == 3:
-                print("Сложная сложность")
-                return 1000
-            
-            else:
-                print("Такой сложности нет, попробуй снова.")
-   
-        except ValueError:
-            print("это даже не число")
-
-print(GREETINGS)
-print(GREETINGS_EASY_DIFFICULTY_CHOOSE)
-print(GREETINGS_MEDIUM_DIFFICULTY_CHOOSE)
-print(GREETINGS_HARD_DIFFICULTY_CHOOSE)
 
 def func_savestats(attempts_results, start_attempts_results, difficulty_results, endgame_state): 
     
@@ -118,7 +118,30 @@ def func_savestats(attempts_results, start_attempts_results, difficulty_results,
     | Осталось попыток: {attempts_results}
         из {start_attempts_results} возможных | Сложность игры: {difficulty_results}"""
     
-    with open("stats2.txt", "w", encoding="utf-8") as f:
+    with open("stats2.txt", "a", encoding="utf-8") as f:
         f.write(GAME_OVER_STATS)
-        
-main(attempts)
+
+
+def func_game_greetings():
+
+    print(GREETINGS)
+    print(GREETINGS_EASY_DIFFICULTY_CHOOSE)
+    print(GREETINGS_MEDIUM_DIFFICULTY_CHOOSE)
+    print(GREETINGS_HARD_DIFFICULTY_CHOOSE)
+
+    return 0
+
+
+def func_game_restart():
+
+    do_restart = input("Хочешь сыграть ещё раз? (да/нет): ")
+
+    if do_restart == "да":
+        print("Выбирай тогда сложность")
+        main()
+
+    else:
+        print("Оки, было весело")
+
+func_game_greetings()
+main()
