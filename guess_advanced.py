@@ -11,7 +11,6 @@ GREETINGS_MEDIUM_DIFFICULTY_CHOOSE = "2 - Средний: от 1 до 100. 7 п�
 GREETINGS_HARD_DIFFICULTY_CHOOSE = "3 - Сложный: от 1 до 1000. 10 попыток"
 win_or_lose = "" 
 
-#подумываю над тем, как можно упростить функции о валидации, попытках и выборе сложности
 def func_game_greetings():
 
     print(GREETINGS)
@@ -19,28 +18,27 @@ def func_game_greetings():
     print(GREETINGS_MEDIUM_DIFFICULTY_CHOOSE)
     print(GREETINGS_HARD_DIFFICULTY_CHOOSE)
 
-    return 0
-
 
 def main():
 
     user_choice_of_difficulty = func_validation_choice_difficulty()
 
 
-    min_possible_number_border, max_possible_number_border = func_choose_difficulty(user_choice_of_difficulty)
-
+    min_possible_number, max_possible_number = func_choose_difficulty(user_choice_of_difficulty)
     attempts = func_calculating_number_of_attempts(user_choice_of_difficulty)
-
-    computer_random_number = func_computer_deciding_number(min_possible_number_border,max_possible_number_border)
-
-    func_game_start(attempts, computer_random_number, min_possible_number_border, max_possible_number_border)
+    computer_random_number = func_computer_deciding_number(min_possible_number,max_possible_number)
 
 
-def func_game_start(attempts, computer_random_number, min_possible_number_border, max_possible_number_border):
+    func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number)
+
+
+def func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number):
 
     while True:
 
-        player_guess = func_player_guess_validation(min_possible_number_border, max_possible_number_border)
+        print("Твои догадки?")
+
+        player_guess = func_player_guess_validation(min_possible_number, max_possible_number)
 
 
         if computer_random_number > player_guess:
@@ -55,48 +53,64 @@ def func_game_start(attempts, computer_random_number, min_possible_number_border
         
         if attempts == 0:
             print("Кажется все твои попытки кончились. Как жаль")
-            return func_game_restart
+            return func_game_restart()
         
         attempts = attempts - 1
         print(f"Число попыток: {attempts}")
 
 
 def func_validation_choice_difficulty():
+
+    available_difficulty_options = [1,3]
+
     while True:
+
         try:
-            user_choice_of_difficulty = int(input())
-            if 0 < user_choice_of_difficulty < 4:
-                    return user_choice_of_difficulty
+
+            user_choice_of_difficulty = input()
+
+            user_choice_of_difficulty.strip() 
+            #нашел функцию которая удаляет пробелы из строк
+
+            user_choice_of_difficulty.strip("-").isdigit() 
+            #проверка на то, число ли строка введеная пользователем
+
+            user_choice_of_difficulty = int(user_choice_of_difficulty)
+            #если да, то строка становится числом и после проверяется
+
+            if user_choice_of_difficulty in available_difficulty_options:
+                    return user_choice_of_difficulty    
             print("Число больше или меньше")
+
         except ValueError:
-            print("Похоже что ты ввел букву или символ, а не число, либо же вообще ничего. Введи число от 1 до 3")
+
+            print(f"Похоже что ты ввел букву или символ либо же вообще ничего. Введи число от {available_difficulty_options}")
 
 
 def func_choose_difficulty(user_choice_of_difficulty): 
     
-    max_possible_number_border = user_choice_of_difficulty
-    min_possible_number_border = 1
+    max_possible_number = user_choice_of_difficulty
+    min_possible_number = 1
 
-    match max_possible_number_border:
+    match max_possible_number:
         #Минимальное возможные границы для числа! Теперь с ними можно экспериментировать как угодно
         case 1:
-            min_possible_number_border = 1
-            max_possible_number_border = 50
+            min_possible_number = 1
+            max_possible_number = 50
 
         case 2:
-            min_possible_number_border = 1
-            max_possible_number_border = 100
+            min_possible_number = 1
+            max_possible_number = 100
 
         case 3:
-            min_possible_number_border = 1
-            max_possible_number_border = 1000
+            min_possible_number = 1
+            max_possible_number = 1000
 
-
-    return min_possible_number_border,max_possible_number_border
+    return min_possible_number,max_possible_number
 
 
 def func_calculating_number_of_attempts(user_choice_of_difficulty):
-    
+
     attempts = 10
     attempts_depending_on_difficulty = user_choice_of_difficulty
 
@@ -114,26 +128,35 @@ def func_calculating_number_of_attempts(user_choice_of_difficulty):
     return attempts
 
 
-def func_computer_deciding_number(min_possible_number_border, max_possible_number_border):
+def func_computer_deciding_number(min_possible_number, max_possible_number):
 
-    min_possible_computer_number = min_possible_number_border
-    max_possible_computer_number = max_possible_number_border
+    min_possible_computer_number = min_possible_number
+    max_possible_computer_number = max_possible_number
     
     computer_random_number = random.randint(min_possible_computer_number, max_possible_computer_number)
 
     return computer_random_number
 
 
-def func_player_guess_validation(min_possible_border_number, max_possible_number_border):
+def func_player_guess_validation(min_possible_number, max_possible_number):
+
     while True:
+
         try:
-            player_guess = int(input())
-            if min_possible_border_number <= player_guess <= max_possible_number_border:
+
+            player_guess = input()
+
+            player_guess.strip()
+            player_guess.strip("-").isdigit()
+            player_guess = int(player_guess)
+
+            if min_possible_number <= player_guess <= max_possible_number:
                 return player_guess
-            print(f"Я чувствую что твое число выходит за рамки от {min_possible_border_number} до {max_possible_number_border}")
+            print(f"Я чувствую что твое число выходит за рамки от {min_possible_number} до {max_possible_number}")
 
         except ValueError:
-            print(f"Введи число от {min_possible_border_number} до {max_possible_number_border}")
+
+            print(f"Введи число от {min_possible_number} до {max_possible_number}")
 
 
 def func_game_restart():
@@ -146,18 +169,6 @@ def func_game_restart():
 
     else:
         print("Оки, было весело")    
-
-
-# def func_savestats(attempts_results, start_attempts_results, difficulty_results, endgame_state): 
-    
-#     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-#     GAME_OVER_STATS = f"""Игра была: {endgame_state} | {timestamp} 
-#     | Осталось попыток: {attempts_results}
-#         из {start_attempts_results} возможных | Сложность игры: {difficulty_results}"""
-    
-#     with open("stats2.txt", "a", encoding="utf-8") as f:
-#         f.write(GAME_OVER_STATS)
 
 func_game_greetings()
 main()
