@@ -25,20 +25,23 @@ def main():
 
 
     min_possible_number, max_possible_number = func_choose_difficulty(user_choice_of_difficulty)
-    attempts = func_calculating_number_of_attempts(user_choice_of_difficulty)
+    attempts, difficulty = func_calculating_number_of_attempts(user_choice_of_difficulty)
     computer_random_number = func_computer_deciding_number(min_possible_number,max_possible_number)
-    print(computer_random_number)
 
-    func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number)
+    func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number, difficulty)
 
 
-def func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number):
+def func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number, difficulty):
+
+    print(f"Была выбрана {difficulty}")
 
     while True:
 
         print("Твои догадки?")
 
         player_guess = func_player_guess_validation(min_possible_number, max_possible_number)
+
+        attempts = attempts - 1
 
         if attempts == 0:
             print("Кажется все твои попытки кончились. Как жаль")
@@ -56,12 +59,18 @@ def func_game_start(attempts, computer_random_number, min_possible_number, max_p
             win_or_lose = "win"
             break
         
-        
-        attempts = attempts - 1
         print(f"Число попыток: {attempts}")
 
-    func_save_stats()
     func_game_restart()
+
+
+def func_removing_backspace(player_input):
+
+    player_input.strip()
+    player_input.strip("-").isdigit() 
+    player_input = int(player_input)
+    return player_input
+
 
 def func_validation_choice_difficulty():
 
@@ -71,24 +80,16 @@ def func_validation_choice_difficulty():
 
         try:
 
-            user_choice_of_difficulty = input()
-
-            user_choice_of_difficulty.strip() 
-            #нашел функцию которая удаляет пробелы из строк
-
-            user_choice_of_difficulty.strip("-").isdigit() 
-            #проверка на то, число ли строка введеная пользователем
-
-            user_choice_of_difficulty = int(user_choice_of_difficulty)
-            #если да, то строка становится числом и после проверяется
+            player_input = input()
+            user_choice_of_difficulty = func_removing_backspace(player_input)
 
             if user_choice_of_difficulty in available_difficulty_options:
                     return user_choice_of_difficulty    
-            print("Число больше или меньше")
+            print("Твое число больше 3 или меньше 1")
 
         except ValueError:
 
-            print(f"Похоже что ты ввел букву или символ либо же вообще ничего. Введи число от {available_difficulty_options}")
+            print("Введи любое из следующих чисел:",', '.join(map(str,available_difficulty_options)))
 
 
 def func_choose_difficulty(user_choice_of_difficulty): 
@@ -122,14 +123,17 @@ def func_calculating_number_of_attempts(user_choice_of_difficulty):
 
         case 1: 
             attempts = 10
+            difficulty = "легкая сложность"
 
         case 2:
             attempts = 7
+            difficulty = "средняя сложность"
 
         case 3:
             attempts = 10
+            difficulty = "сложная сложность"
 
-    return attempts
+    return attempts, difficulty
 
 
 def func_computer_deciding_number(min_possible_number, max_possible_number):
@@ -148,11 +152,9 @@ def func_player_guess_validation(min_possible_number, max_possible_number):
 
         try:
 
-            player_guess = input()
+            player_input = input()
 
-            player_guess.strip()
-            player_guess.strip("-").isdigit()
-            player_guess = int(player_guess)
+            player_guess = func_removing_backspace(player_input)
 
             if min_possible_number <= player_guess <= max_possible_number:
                 return player_guess
@@ -163,15 +165,10 @@ def func_player_guess_validation(min_possible_number, max_possible_number):
             print(f"Введи число от {min_possible_number} до {max_possible_number}")
 
 
-def func_save_stats():
-    # start_number_of_attempts = func_calculating_number_of_attempts(user_choice_of_difficulty)
-    with open("stats.txt", "a") as f:
-        f.write("hello world")
-
 def func_game_restart():
 
-    agreement = ["да", "д", "if", "l"]
-    disagreement = ["нет", "н", "y", "ytn"]
+    agreement = ["да", "д"]
+    disagreement = ["нет", "н"]
 
     while True:
 
@@ -185,6 +182,11 @@ def func_game_restart():
             print("Оки, было весело")    
             return None
 
+
+def endgame_stats():
+    with open("stats.txt", "a") as f:
+        f.write("something")
+
+endgame_stats()
 func_game_greetings()
-func_save_stats()
 main()
