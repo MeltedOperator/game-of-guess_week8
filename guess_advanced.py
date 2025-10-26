@@ -11,7 +11,7 @@ GREETINGS_MEDIUM_DIFFICULTY_CHOOSE = "2 - Средний: от 1 до 100. 7 п�
 GREETINGS_HARD_DIFFICULTY_CHOOSE = "3 - Сложный: от 1 до 1000. 10 попыток"
 win_or_lose = "" 
 
-def func_game_greetings():
+def game_greetings():
 
     print(GREETINGS)
     print(GREETINGS_EASY_DIFFICULTY_CHOOSE)
@@ -21,32 +21,25 @@ def func_game_greetings():
 
 def main():
 
-    user_choice_of_difficulty = func_validation_choice_difficulty()
+    user_choice_of_difficulty = validation_choice_difficulty()
 
 
-    min_possible_number, max_possible_number = func_choose_difficulty(user_choice_of_difficulty)
-    attempts, difficulty = func_calculating_number_of_attempts(user_choice_of_difficulty)
-    computer_random_number = func_computer_deciding_number(min_possible_number,max_possible_number)
+    min_possible_number, max_possible_number = choose_difficulty(user_choice_of_difficulty)
+    attempts, difficulty = calculating_number_of_attempts(user_choice_of_difficulty)
+    computer_random_number = computer_deciding_number(min_possible_number,max_possible_number)
+    result = game_start(attempts, computer_random_number, min_possible_number, max_possible_number)
 
-    func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number, difficulty)
+
+    endgame_stats(result, attempts, computer_random_number,difficulty)
 
 
-def func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number, difficulty):
-
-    print(f"Была выбрана {difficulty}")
+def game_start(attempts, computer_random_number, min_possible_number, max_possible_number):
 
     while True:
 
-        print("Твои догадки?")
-
-        player_guess = func_player_guess_validation(min_possible_number, max_possible_number)
+        player_guess = player_guess_validation(min_possible_number, max_possible_number)
 
         attempts = attempts - 1
-
-        if attempts == 0:
-            print("Кажется все твои попытки кончились. Как жаль")
-            win_or_lose = "lose"
-            break
 
         if computer_random_number > player_guess:
             print("Мое число больше")
@@ -58,13 +51,17 @@ def func_game_start(attempts, computer_random_number, min_possible_number, max_p
             print(f"Ты угадал! Мое число {computer_random_number}")
             win_or_lose = "win"
             break
+
+        if attempts == 0:
+            print("Кажется все твои попытки кончились. Как жаль")
+            win_or_lose = "lose"
+            break
         
-        print(f"Число попыток: {attempts}")
+        print(f"Число попыток: {attempts}") 
 
-    func_game_restart()
+    return win_or_lose
 
-
-def func_removing_backspace(player_input):
+def removing_backspace(player_input):
 
     player_input.strip()
     player_input.strip("-").isdigit() 
@@ -72,33 +69,34 @@ def func_removing_backspace(player_input):
     return player_input
 
 
-def func_validation_choice_difficulty():
+def validation_choice_difficulty():
 
     available_difficulty_options = [1,2,3]
+    options = (', '.join(map(str,available_difficulty_options)))
 
     while True:
 
         try:
 
             player_input = input()
-            user_choice_of_difficulty = func_removing_backspace(player_input)
+            user_choice_of_difficulty = removing_backspace(player_input)
 
             if user_choice_of_difficulty in available_difficulty_options:
                     return user_choice_of_difficulty    
+            
             print("Твое число больше 3 или меньше 1")
 
         except ValueError:
+            print("Введи любое из следующих чисел:", options)
 
-            print("Введи любое из следующих чисел:",', '.join(map(str,available_difficulty_options)))
 
-
-def func_choose_difficulty(user_choice_of_difficulty): 
+def choose_difficulty(user_choice_of_difficulty): 
     
     max_possible_number = user_choice_of_difficulty
     min_possible_number = 1
 
     match max_possible_number:
-        #Минимальное возможные границы для числа! Теперь с ними можно экспериментировать как угодно
+
         case 1:
             min_possible_number = 1
             max_possible_number = 50
@@ -114,7 +112,7 @@ def func_choose_difficulty(user_choice_of_difficulty):
     return min_possible_number,max_possible_number
 
 
-def func_calculating_number_of_attempts(user_choice_of_difficulty):
+def calculating_number_of_attempts(user_choice_of_difficulty):
 
     attempts = 10
     attempts_depending_on_difficulty = user_choice_of_difficulty
@@ -136,7 +134,7 @@ def func_calculating_number_of_attempts(user_choice_of_difficulty):
     return attempts, difficulty
 
 
-def func_computer_deciding_number(min_possible_number, max_possible_number):
+def computer_deciding_number(min_possible_number, max_possible_number):
 
     min_possible_computer_number = min_possible_number
     max_possible_computer_number = max_possible_number
@@ -146,33 +144,32 @@ def func_computer_deciding_number(min_possible_number, max_possible_number):
     return computer_random_number
 
 
-def func_player_guess_validation(min_possible_number, max_possible_number):
+def player_guess_validation(min_possible_number, max_possible_number):
 
     while True:
 
         try:
+            player_input = input("Твои догадки? ")
 
-            player_input = input()
-
-            player_guess = func_removing_backspace(player_input)
+            player_guess = removing_backspace(player_input)
 
             if min_possible_number <= player_guess <= max_possible_number:
                 return player_guess
-            print(f"Я чувствую что твое число выходит за рамки от {min_possible_number} до {max_possible_number}")
+            print(f"Твое число выходит за рамки от {min_possible_number} до {max_possible_number}!")
 
         except ValueError:
 
             print(f"Введи число от {min_possible_number} до {max_possible_number}")
 
 
-def func_game_restart():
+def game_restart():
 
     agreement = ["да", "д"]
     disagreement = ["нет", "н"]
 
     while True:
 
-        do_restart = input("Хочешь сыграть ещё раз? (да/нет): ")
+        do_restart = input("Хочешь сыграть ещё раз? Скажи да или нет: ")
 
         if do_restart.strip() in agreement:
             print("Выбирай тогда сложность")
@@ -183,10 +180,14 @@ def func_game_restart():
             return None
 
 
-def endgame_stats():
-    with open("stats.txt", "a") as f:
-        f.write("something")
+def endgame_stats(result, attempts, computer_random_number,difficulty):
 
-endgame_stats()
-func_game_greetings()
+    with open("stats.txt", "a") as f:
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"""время игры: {timestamp} | игра была: {result} |оставшиеся попытки: {attempts} | 
+        загаданное число: {computer_random_number} | сложность игры: {difficulty} |""")
+
+game_greetings()
 main()
+game_restart()
