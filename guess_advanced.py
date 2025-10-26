@@ -27,7 +27,7 @@ def main():
     min_possible_number, max_possible_number = func_choose_difficulty(user_choice_of_difficulty)
     attempts = func_calculating_number_of_attempts(user_choice_of_difficulty)
     computer_random_number = func_computer_deciding_number(min_possible_number,max_possible_number)
-
+    print(computer_random_number)
 
     func_game_start(attempts, computer_random_number, min_possible_number, max_possible_number)
 
@@ -40,6 +40,10 @@ def func_game_start(attempts, computer_random_number, min_possible_number, max_p
 
         player_guess = func_player_guess_validation(min_possible_number, max_possible_number)
 
+        if attempts == 0:
+            print("Кажется все твои попытки кончились. Как жаль")
+            win_or_lose = "lose"
+            break
 
         if computer_random_number > player_guess:
             print("Мое число больше")
@@ -49,19 +53,19 @@ def func_game_start(attempts, computer_random_number, min_possible_number, max_p
 
         else:
             print(f"Ты угадал! Мое число {computer_random_number}")
-            return func_game_restart()
+            win_or_lose = "win"
+            break
         
-        if attempts == 0:
-            print("Кажется все твои попытки кончились. Как жаль")
-            return func_game_restart()
         
         attempts = attempts - 1
         print(f"Число попыток: {attempts}")
 
+    func_save_stats()
+    func_game_restart()
 
 def func_validation_choice_difficulty():
 
-    available_difficulty_options = [1,3]
+    available_difficulty_options = [1,2,3]
 
     while True:
 
@@ -159,16 +163,28 @@ def func_player_guess_validation(min_possible_number, max_possible_number):
             print(f"Введи число от {min_possible_number} до {max_possible_number}")
 
 
+def func_save_stats():
+    # start_number_of_attempts = func_calculating_number_of_attempts(user_choice_of_difficulty)
+    with open("stats.txt", "a") as f:
+        f.write("hello world")
+
 def func_game_restart():
 
-    do_restart = input("Хочешь сыграть ещё раз? (да/нет): ")
+    agreement = ["да", "д", "if", "l"]
+    disagreement = ["нет", "н", "y", "ytn"]
 
-    if do_restart == "да":
-        print("Выбирай тогда сложность")
-        main()
+    while True:
 
-    else:
-        print("Оки, было весело")    
+        do_restart = input("Хочешь сыграть ещё раз? (да/нет): ")
+
+        if do_restart.strip() in agreement:
+            print("Выбирай тогда сложность")
+            main()
+
+        elif do_restart.strip() in disagreement:
+            print("Оки, было весело")    
+            return None
 
 func_game_greetings()
+func_save_stats()
 main()
