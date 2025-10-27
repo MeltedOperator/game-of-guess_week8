@@ -16,6 +16,9 @@ attempts = 10
 
 def game_greetings():
 
+    """функция которая приветствует пользователя и предлагает ему выбрать
+    одну из предложенных сложностей"""
+
     print(GREETINGS)
     print(GREETINGS_EASY_DIFFICULTY_CHOOSE)
     print(GREETINGS_MEDIUM_DIFFICULTY_CHOOSE)
@@ -23,7 +26,6 @@ def game_greetings():
 
 
 def main():
-
     user_choice_of_difficulty = validation_choice_difficulty()
 
     min_possible_number, max_possible_number = choose_difficulty(user_choice_of_difficulty)
@@ -39,6 +41,13 @@ def main():
 
 
 def game_start(attempts, computer_random_number, min_possible_number,max_possible_number):
+
+    """эта функция начинает игру:
+    1)player_guess - спрашивает у пользователя число - догадку
+    2)с каждым ходом число попыток уменьшается. С каждой итерацией игрок ближе к выигрышу или проигрышу
+    3)CURRENT_GAME - переменная, которая показывает текущее состояние игры. Пока число попыток не равно нулю и/или игрок
+    не угадал число, загаданное компьютером, то компьютер дает подсказки(см. в giving_hints)
+    4)возвращает итог игры и число оставшихся попыток"""
 
     while True:
 
@@ -56,6 +65,9 @@ def game_start(attempts, computer_random_number, min_possible_number,max_possibl
 
 
 def giving_hints(player_guess, computer_random_number, attempts):
+
+    """Функция подсказывает игроку и говорит, меньше или же больше задуманное компьютером число.
+    Если игра заканчивается, то возвращает один из результатов - CURRENT_GAME выиграна или проиграна"""
 
     CURRENT_GAME = "в процессе"
 
@@ -78,6 +90,14 @@ def giving_hints(player_guess, computer_random_number, attempts):
 
 
 def validation_choice_difficulty():
+
+    """Валидация выбора сложности. Игроку дается выбор из available_difficulty_options.
+    OPTIONS - это набор допустимых вариантов без скобок и запятых. До тех пор, пока игрок
+    не выбрал одну из возможных сложностей(в текущей версии от 1 до 3) валидация кода будет
+    продолжаться и код не перейдет к следующей функции. Функция работает даже если введена
+    буква, число больше или меньше допустимого значения. Если в вводе
+    есть пробелы - то они убираются благодаря функции removing_backspace_from_input"""
+
     available_difficulty_options = [1,2,3]
     OPTIONS = (', '.join(map(str,available_difficulty_options))) #убираем квадратные скобки и запятые
 
@@ -95,6 +115,12 @@ def validation_choice_difficulty():
 
 
 def choose_difficulty(user_choice_of_difficulty): 
+
+    """после проверки ввода в validation_choice_difficulty() запрос обрабатывается
+    и в зависимости от выбранной сложности выбираются минимальные(min_possible_number) 
+    и максимальные(max_possible_number) рамки для возможного числа, как для компьютера
+    так и для пользователя, сохраненные настройки после будут использоваться в 
+    других функциях для загадывания компьютером числа и последующей валидации числа пользователя"""
 
     max_possible_number = user_choice_of_difficulty
     min_possible_number = user_choice_of_difficulty
@@ -117,9 +143,13 @@ def choose_difficulty(user_choice_of_difficulty):
 
 def calculating_number_of_attempts(user_choice_of_difficulty):
 
-    attempts_depending_on_difficulty = user_choice_of_difficulty
+    """Функция в зависимости от сложности определяет количество попыток(attempts), за которые игрок
+    должен угадать загаданное компьютером число. Здесь же определяется сложность игры(DIFFICULTY)
+    чтобы после ее записать в итоги игры и в отдельный файл формата .txt (stats.txt)"""
 
-    match attempts_depending_on_difficulty:
+    attempts_depending_on_difficulty = user_choice_of_difficulty 
+
+    match attempts_depending_on_difficulty: 
         case 1: 
             attempts = 10
             DIFFICULTY = "легкая сложность"
@@ -137,12 +167,21 @@ def calculating_number_of_attempts(user_choice_of_difficulty):
 
 def computer_deciding_number(min_possible_number, max_possible_number):
 
+    """В этой функции компьютер загадывает число(computer_random_number) не заходя за 
+    установленные раннее рамки(min_possible_number, max_possible_number)"""
+
     computer_random_number = random.randint(min_possible_number, max_possible_number)
 
     return computer_random_number
 
 
 def player_guess_validation(min_possible_number, max_possible_number):
+
+    """В этой функции ввод игрока обрабатывается, и если введенное им число 
+    не выходит за рамки(min_possible_number, max_possible_number) то после
+    возвращается для использования в функции game_start(). Если ввод неправильный - 
+    то цикл продолжается, принуждая игрока ввести число по всем правилам. Если в вводе
+    есть пробелы - то они убираются благодаря функции removing_backspace_from_input"""
 
     while True:
         try:
@@ -161,6 +200,11 @@ def player_guess_validation(min_possible_number, max_possible_number):
 
 def removing_backspace_from_input(player_input):
 
+    """Функция принимает запрос пользователя, после чего сначала удаляет из него
+    все пустые пространства( player_input.strip() ), затем, полученная строка 
+    превращается в число(int) и возвращает значение, которое уже после обрабатывают
+    player_guess_validation() и validation_choice_difficulty()"""
+
     player_input.strip("-").isdigit() 
     player_input = int(player_input)
 
@@ -168,6 +212,14 @@ def removing_backspace_from_input(player_input):
 
 
 def endgame_stats(current_game, aftermath_attempts, computer_random_number,difficulty):
+
+    """В этой функции все результаты(SAVED_STATS) записываются в отдельный текстовый файл(stats.txt)
+    для их последующего хранения, все остальные результаты удаляются после закрытия
+    программы. current_game - итоги игры(была ли она выиграна или проиграна)
+    aftermath_attempts - выводятся оставшиеся попытки
+    computer_random_number - число, загаданное компьютером
+    difficulty - выбранная игроком сложность. Все эти переменные записываются в SHOWN_STATS
+    и показываются в консоли, а после SAVED_STATS остается в текстовом файле, для дальнейшей обработки"""
 
     TIMESTAMP = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -184,6 +236,10 @@ def endgame_stats(current_game, aftermath_attempts, computer_random_number,diffi
 
 def game_restart():
 
+    """Функция запускает main() если игрок желает повторной игры. списки 
+    agreement и disagreement используются для проверки ввода пользователя.
+    Если он соглашается - игра продолжается. Если нет - игра заканчивается"""
+
     agreement = ["да", "д"]
     disagreement = ["нет", "н"]
 
@@ -198,6 +254,5 @@ def game_restart():
             print("Удачи, было весело")    
             return None
         
-
 game_greetings()
 main()
